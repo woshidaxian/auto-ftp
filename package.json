@@ -1,0 +1,23 @@
+{
+  "name": "auto-ftp",
+  "version": "1.0.0",
+  "description": "部署FTP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "buildDev": "echo HWG && exit 1",
+    "build": "echo HWG && exit 1",
+    "buildD": "echo HWG && exit 1"
+  },
+  "author": "HWG",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.3.4",
+    "chalk": "^4.0.0",
+    "moment": "^2.29.4",
+    "nodegit": "^0.27.0",
+    "readline-sync": "^1.4.10",
+    "single-line-log": "^1.1.2",
+    "ssh2-sftp-client": "^9.0.4"
+  }
+}
