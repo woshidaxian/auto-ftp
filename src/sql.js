@@ -4,7 +4,7 @@ const SERVER = require('./server')
 async function lookProject(r, n){
   let result = []
   await PROJECT.forEach(async item=>{
-    if (item.project == n && item.house == r){
+    if (item.project == n && item.house.indexOf(r)!=-1){
       result.push({
         ...item,
         server: await lookServer(item.serverId)

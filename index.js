@@ -2,22 +2,27 @@ const chalk = require('chalk')
 const CONFIG = require('./config.js')
 const putFile = require('./src/put');
 const runProject = require('./src/run')
+const fs = require('fs')
 global.readline = require('readline').createInterface({ input: process.stdin, output: process.stdout })
 let package = null
 global.user = ''
 
-try{
-  package = require(CONFIG.PACKAGE)
-  if(!package.project){
-    console.log(chalk.red('未在package.json中找到project配置！！！'))
-    process.exit(1)
-  }
-  main()
-}catch(e){
-  console.log(chalk.red('请确认程序启动于项目根路径上，或项目根路径上存在package.json文件！'))
-  // 结束程序
-  process.exit(1)
-}
+  fs.access(CONFIG.PACKAGE, fs.constants.F_OK, err=>{
+    if(err){
+      console.log(chalk.red('请确认程序启动于项目根路径上，或项目根路径上存在package.json文件！'))
+      // 结束程序
+      process.exit(1)
+    }else{
+      package = require(CONFIG.PACKAGE)
+      if (!package.project) {
+        console.log(chalk.red('未在package.json中找到project配置！！！'))
+        process.exit(1)
+      } else {
+        main()
+      }
+    }
+    
+  })
 
 async function main() {
   if(process.argv&&process.argv[2]){

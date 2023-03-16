@@ -8,7 +8,6 @@ const SQL = require('./sql')
 const Client = require('ssh2-sftp-client');
 const path = require('path');
 const moment = require('moment');
-const logInfo = require('./log');
 let sftp = null
 
 async function putFile() {
@@ -103,8 +102,6 @@ async function transfer(server, now){
   sftp.uploadDir(CONFIG.DIST, server.root).then(done=>{
     sftp.end()
     console.log(chalk.green('\n传输完成'))
-    logInfo(`${global.user}【${now}】：更新了项目${server.project}【${server.house}】\n`)
-    process.exit(1)
   })
 }
 

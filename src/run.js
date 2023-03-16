@@ -3,12 +3,11 @@ const { exec } = require('child_process')
 const chalk = require('chalk')
 const path = require('path')
 const putFile = require('./put');
-const package = require(CONFIG.PACKAGE)
 global.singleLine = require('single-line-log').stdout
 
 async function runProject(){
   let runKeys = []
-  await Object.keys(package.scripts).forEach(item=>{
+  await Object.keys(require(CONFIG.PACKAGE).scripts).forEach(item=>{
     if(item.indexOf('build')!=-1){
       runKeys.push(item)
     }
@@ -28,7 +27,7 @@ async function runProject(){
     runCommand(runKeys[0])
   }else if(runKeys.length >=2 ){
     const str = await runKeys.map((item, index)=>{
-      return `【${index+1}】  ${item}: ${package.scripts[item]}`
+      return `【${index + 1}】  ${item}: ${require(CONFIG.PACKAGE).scripts[item]}`
     }).join('\n')
     readline.question(`${chalk.green('发现多个打包命令，请选择？（键入对应序号的数字并回车）')}\n${str}\n`, n => {
       if(n>=1&&n<=runKeys.length){
