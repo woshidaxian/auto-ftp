@@ -3,3 +3,7 @@ node_modules/
 src/project.js
 
 src/server.js
+
+log.txt
+
+test/

@@ -8,6 +8,8 @@ const SQL = require('./sql')
 const Client = require('ssh2-sftp-client');
 const path = require('path');
 const moment = require('moment');
+const package = require(CONFIG.PACKAGE)
+const addLog = require('./log')
 let sftp = null
 
 async function putFile() {
@@ -36,7 +38,11 @@ async function putFile() {
 }
 
 async function findServer(files){
-  const repo = await nodeGit.Repository.open(process.cwd())
+  let p = process.cwd()
+  if (package.repoPath){
+    p = path.resolve(p, package.repoPath)
+  }
+  const repo = await nodeGit.Repository.open(p)
   const ref = await repo.getCurrentBranch()
   const branchName = ref.name()
   const projectName = require(CONFIG.PACKAGE).project
@@ -95,10 +101,12 @@ async function backupFile(files, server) {
 }
 
 async function transfer(server, now){
+  addLog(`${global.user}于${moment().format('YYYY-MM-DD HH:mm:ss')}部署了${server.project}【${server.house}】\n`)
   sftp.on('upload', info=>{
     let t = Math.round((new Date().getTime() - new Date(now).getTime()) / 1000)
     singleLine(`[${t}秒]正在传输：${chalk.green(info.source)}`)
   })
+  
   sftp.uploadDir(CONFIG.DIST, server.root).then(done=>{
     sftp.end()
     console.log(chalk.green('\n传输完成'))

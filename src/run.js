@@ -53,8 +53,10 @@ async function runCommand(command) {
     if(err){
       clearInterval(timer)
       console.error(err)
-      console.log(chalk.red('打包执行出错，请检查'))
-      process.exit(1)
+      console.log(chalk.red('打包过程有错误产生，请注意检查再决定是否继续执行文件传输！！！'))
+      setTimeout(() => {
+        putFile()
+      }, 1000);
     }else{
       clearInterval(timer)
       console.log(out)

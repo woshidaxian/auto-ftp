@@ -6,7 +6,6 @@ const fs = require('fs')
 global.readline = require('readline').createInterface({ input: process.stdin, output: process.stdout })
 let package = null
 global.user = ''
-
   fs.access(CONFIG.PACKAGE, fs.constants.F_OK, err=>{
     if(err){
       console.log(chalk.red('请确认程序启动于项目根路径上，或项目根路径上存在package.json文件！'))
