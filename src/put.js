@@ -11,6 +11,28 @@ const moment = require('moment');
 const package = require(CONFIG.PACKAGE)
 const addLog = require('./log')
 let sftp = null
+let foldSize = 0
+
+
+function getFolderSize(folderPath) {
+  let totalSize = 0;
+
+  // 使用fs.readdirSync同步读取文件夹中的所有文件和子文件夹
+  const files = fs.readdirSync(folderPath, { withFileTypes: true });
+  for (const file of files) {
+    const filePath = path.join(folderPath, file.name);
+    // 如果是文件夹，递归计算文件夹大小
+    if (file.isDirectory()) {
+      totalSize += Number(getFolderSize(filePath));
+    }
+    // 如果是文件，获取文件大小并累加到总大小中
+    else if (file.isFile()) {
+      totalSize += Number(fs.statSync(filePath).size);
+    }
+  }
+
+  return totalSize
+}
 
 async function putFile() {
   fs.readdir(CONFIG.DIST, async (err, files)=>{
@@ -29,6 +51,7 @@ async function putFile() {
           flag = await auth(pwd)
           if(flag){
             // 查询部署地址
+            foldSize = getFolderSize(CONFIG.DIST) / 1024 ** 2
             await findServer(files)
           }
         }
@@ -102,14 +125,22 @@ async function backupFile(files, server) {
 
 async function transfer(server, now){
   addLog(`${global.user}于${moment().format('YYYY-MM-DD HH:mm:ss')}部署了${server.project}【${server.house}】\n`)
+  let file = ''
+  let size = 0
   sftp.on('upload', info=>{
-    let t = Math.round((new Date().getTime() - new Date(now).getTime()) / 1000)
-    singleLine(`[${t}秒]正在传输：${chalk.green(info.source)}`)
+    file = info.source
+    fs.stat(info.source, (err, stats) => {
+      size += stats.size
+    })
   })
-  
+  let timer = setInterval(() => {
+    let t = Math.round((new Date().getTime() - new Date(now).getTime()) / 1000)
+    singleLine(`【${t}秒】【共：${foldSize.toFixed(2)}MB】【已传输：${(size / 1024 ** 2).toFixed(2)}MB】【${((size/1024**2)/foldSize*100).toFixed(2)}%】正在传输：${chalk.green(file)}`)
+  }, 200);
   sftp.uploadDir(CONFIG.DIST, server.root).then(done=>{
     sftp.end()
     console.log(chalk.green('\n传输完成'))
+    clearInterval(timer)
   })
 }
 

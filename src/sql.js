@@ -38,10 +38,10 @@ async function login(account, password){
         global.userId = res.data.data.i
         resolve(true)
       } else {
-        reject(res.data.message)
+        resolve(false)
       }
     }).catch(err => {
-      reject(err)
+      resolve(false)
     })
   })
 }
@@ -83,6 +83,15 @@ function addLog(r, n) {
       house: r,
       project: n
     }
+  }).then(()=>{
+    axios.get({
+      url: CONFIG.BASE_URL + '/api/user/out',
+      method: 'GET',
+      headers: {
+        'u': global.userId,
+        't': global.token
+      },
+    })
   })
 }
 
