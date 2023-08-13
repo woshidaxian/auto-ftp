@@ -17,3 +17,6 @@ module.exports = [
     password: ''
   }
 ]
+
+### run
+node ./index.js userName [put]
